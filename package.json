@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "nextauth_secret":"openssl rand -base64 32"
   },
   "dependencies": {
     "autoprefixer": "10.4.14",
