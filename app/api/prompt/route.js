@@ -8,11 +8,11 @@ export const GET = async (req, res) => {
         await connectToDB()
 
         // prompts = await Prompt.find({}).populate('creator')
-        if (!search_query) {
-            prompts = await Prompt.find({}).populate('creator')
-        } else {
-            prompts = await Prompt.find({ prompt: `/${search_query}/` }).populate('creator')
-        }
+        // if (!search_query) {
+        //     prompts = await Prompt.find({}).populate('creator')
+        // } else {
+        //     prompts = await Prompt.find({ prompt: `/${search_query}/` }).populate('creator')
+        // }
 
         return new Response(JSON.stringify(prompts), { status: 200 })
     } catch (error) {
