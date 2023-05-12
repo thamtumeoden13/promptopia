@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useRef, useState, useEffect } from "react"
 
 import PromptCard from "./PromptCard"
 
@@ -20,10 +20,35 @@ const PromptCardList = ({ data, handleTagClick }) => {
 
 const Feed = () => {
 
-  const [searchText, setSearchText] = useState('')
+  const timeoutSearch = useRef(null)
+
   const [posts, setPosts] = useState([])
 
-  const handleSearchChange = (e) => {
+  const [searchText, setSearchText] = useState('')
+  const [searchPosts, setSearchPosts] = useState([])
+
+  const handleSearchChange = async (e) => {
+    const text = e.target.value
+    setSearchText(text)
+
+    if (timeoutSearch.current) {
+      clearTimeout(timeoutSearch.current)
+    }
+
+    timeoutSearch.current = setTimeout(async () => {
+      const response = await fetch(`/api/prompt`, {
+        method: 'GET',
+        body: JSON.stringify({
+          search_query: text,
+        })
+      })
+      const data = await response.json()
+      setSearchPosts(data || [])
+    }, 500);
+
+  }
+
+  const handleTagClick = async (tag) => {
 
   }
 
@@ -56,8 +81,8 @@ const Feed = () => {
       </form>
 
       <PromptCardList
-        data={posts}
-        handleTagClick={() => { }}
+        data={searchText ? searchPosts : posts}
+        handleTagClick={handleTagClick}
       />
     </section>
   )
