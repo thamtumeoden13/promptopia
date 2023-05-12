@@ -11,7 +11,7 @@ export const GET = async (req, res) => {
         if (!search_query) {
             prompts = await Prompt.find({}).populate('creator')
         } else {
-            prompts = await Prompt.find({ prompt: `/${search_query}/` })
+            prompts = await Prompt.find({ prompt: `/${search_query}/` }).populate('creator')
         }
 
         return new Response(JSON.stringify(prompts), { status: 200 })
