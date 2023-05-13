@@ -13,7 +13,7 @@ const Home = () => {
           </span>
         </h1>
         <p className="desc text-center">
-          Promtopia is anopen-source AU prompting tool for modern world to discover,
+          Promtopia is an open-source AU prompting tool for modern world to discover,
           create and share creative prompts
         </p>
         

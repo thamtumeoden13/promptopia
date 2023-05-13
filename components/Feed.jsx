@@ -3,8 +3,9 @@
 import { useRef, useState, useEffect } from "react"
 
 import PromptCard from "./PromptCard"
+import { useRouter } from "next/navigation"
 
-const PromptCardList = ({ data, handleTagClick }) => {
+const PromptCardList = ({ data, handleTagClick, handleUserClick }) => {
   return (
     <div className="mt-16 prompt_layout">
       {data.map((post) => (
@@ -12,6 +13,7 @@ const PromptCardList = ({ data, handleTagClick }) => {
           key={post._id}
           post={post}
           handleTagClick={handleTagClick}
+          handleUserClick={handleUserClick}
         />
       ))}
     </div>
@@ -21,6 +23,7 @@ const PromptCardList = ({ data, handleTagClick }) => {
 const Feed = () => {
 
   const timeoutSearch = useRef(null)
+  const router = useRouter()
 
   const [posts, setPosts] = useState([])
 
@@ -28,28 +31,17 @@ const Feed = () => {
   const [searchPosts, setSearchPosts] = useState([])
 
   const handleSearchChange = async (e) => {
-    const text = e.target.value
-    setSearchText(text)
-
-    if (timeoutSearch.current) {
-      clearTimeout(timeoutSearch.current)
-    }
-
-    timeoutSearch.current = setTimeout(async () => {
-      const response = await fetch(`/api/prompt`, {
-        method: 'GET',
-        body: JSON.stringify({
-          search_query: text,
-        })
-      })
-      const data = await response.json()
-      setSearchPosts(data || [])
-    }, 500);
-
+    setSearchText(e.target.value)
   }
 
   const handleTagClick = async (tag) => {
+    setSearchText(tag)
+  }
 
+  const handleUserClick = (post) => {
+    console.log('handleUserClick', post)
+    router.push(`/other-profile?id=${post.creator._id}&name=${post.creator.username}`)
+    // router.push(`/update-prompt?id=${post._id}`)
   }
 
   useEffect(() => {
@@ -64,6 +56,25 @@ const Feed = () => {
     fetchPosts()
 
   }, [])
+
+  useEffect(() => {
+    if (timeoutSearch.current) {
+      clearTimeout(timeoutSearch.current)
+    }
+    timeoutSearch.current = setTimeout(async () => {
+      const response = await fetch(`/api/prompt`, {
+        method: 'POST',
+        body: JSON.stringify({
+          search_query: searchText,
+        })
+      })
+      const data = await response.json()
+      setSearchPosts(data || [])
+    }, 500);
+    return () => {
+      clearTimeout(timeoutSearch.current)
+    }
+  }, [searchText])
 
   return (
     <section className="feed">
@@ -83,6 +94,7 @@ const Feed = () => {
       <PromptCardList
         data={searchText ? searchPosts : posts}
         handleTagClick={handleTagClick}
+        handleUserClick={handleUserClick}
       />
     </section>
   )
